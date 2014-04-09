@@ -1,0 +1,55 @@
+﻿@model eSocium.Web.Models.GetXlsViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create Question</h2>
+@using (Html.BeginForm("Create", "Question", FormMethod.Post, new { enctype = "multipart/form-data", @data_ajax = "false" }))
+{
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <div class="editor-label">
+            MS Excel file with survey reponses
+        </div>
+        <div class="editor-field">
+            <input type="file" name="xlsFile" />
+            @Html.ValidationMessage("xlsFile")
+        </div>
+
+        <div class="editor-label">
+            <input type="checkbox" name="hasHeader" value="true" checked />Does your document have a header?
+        </div>
+        <div class="editor-field">
+            @Html.ValidationMessageFor(model => model.hasHeader)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.sheetNumber)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.sheetNumber)
+            @Html.ValidationMessageFor(model => model.sheetNumber)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Column)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.Column, Enumerable.Range(1, 26)
+                .Select(i => new SelectListItem { Value = i.ToString(), Text = ((char)('A' + i)).ToString() }), "Column")
+            @Html.ValidationMessageFor(model => model.Column)
+        </div>
+
+        @Html.HiddenFor(model => model.SurveyID)
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Cancel and return to question list", "Index", 
+        new { controller = "Question", SurveyID = Model.SurveyID })
+</div>

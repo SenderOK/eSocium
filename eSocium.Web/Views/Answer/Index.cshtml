@@ -1,0 +1,53 @@
+﻿@model eSocium.Web.Models.AnswersViewModel
+
+@{
+    ViewBag.Title = "Answers";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (TempData["message"] != null)
+{
+    <div class="Message">@TempData["message"]</div>
+}
+
+<p>
+    @Html.ActionLink("Edit Question", "Edit",
+        new { controller = "Question", questionID = Model.QuestionID })
+</p>
+
+<p>
+    @Html.ActionLink("Return back to question list", "Index",
+        new { controller = "Question", surveyID = Model.SurveyID })
+</p>
+
+
+<h3>Question: @Model.QuestionWording</h3>
+
+<table style="width: 400px">
+    <tr>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.Answers.FirstOrDefault().UserRespondentID)
+        </th>
+        <th style="width: 300px">
+            @Html.DisplayNameFor(model => model.Answers.FirstOrDefault().Text)
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Answers)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserRespondentID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            <td>
+        </tr>
+    }
+
+</table>
+
+<p>
+    @Html.ActionLink("Return back to question list", "Index", 
+        new { controller = "Question", surveyID = Model.SurveyID })
+</p>

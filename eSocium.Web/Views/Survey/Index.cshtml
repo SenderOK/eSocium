@@ -1,0 +1,77 @@
+﻿@model IEnumerable<eSocium.Domain.Entities.Survey>
+
+@{
+    ViewBag.Title = "Your Surveys";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (TempData["message"] != null)
+{
+    <div class="Message">@TempData["message"]</div>
+}
+
+<p>
+    @Html.ActionLink("Create New Survey", "Create")
+</p>
+<table>
+    <tr>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.CreatorName)
+        </th>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.CreationTime)
+        </th>
+        <th style ="width: 100px">
+            @Html.DisplayNameFor(model => model.LastModificationTime)
+        </th>
+        <th style="width: 200px">
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.SurveyRegionDescription)
+        </th>
+        <th style="width: 100px">
+            @Html.DisplayNameFor(model => model.SurveyTimeDescription)
+        </th>
+        <th style="width: 100px"></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "Index", 
+                    new {controller = "Question", SurveyID = item.SurveyID })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatorName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModificationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SurveyRegionDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SurveyTimeDescription)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { SurveyID = item.SurveyID })
+                <br>
+                @Html.ActionLink("Delete", "Delete", new { SurveyID = item.SurveyID }, 
+                    new { onclick = "return confirm('Are you sure you want to delete the survey?')" })
+            </td>
+        </tr>
+    }
+
+</table>

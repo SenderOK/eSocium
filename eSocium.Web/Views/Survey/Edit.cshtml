@@ -1,0 +1,14 @@
+﻿@model eSocium.Domain.Entities.Survey
+
+@{
+    ViewBag.Title = "Survey Info: " + @Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "Survey"))
+{
+    @Html.EditorForModel()
+    <input type="submit" value="Save" />
+    @Html.ActionLink("Cancel and return to survey list", "Index")
+}
