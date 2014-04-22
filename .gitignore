@@ -24,6 +24,7 @@ Thumbs.db
 *.lib
 *.sbr
 #Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
+ipch/
 [Bb]in/
 [Oo]bj/
 [Dd]ebug*/
