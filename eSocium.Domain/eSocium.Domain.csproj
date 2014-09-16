@@ -55,6 +55,8 @@
     <Compile Include="Concrete\SurveysContext.cs" />
     <Compile Include="Concrete\SurveysDbInitalizer.cs" />
     <Compile Include="Entities\Answer.cs" />
+    <Compile Include="Entities\Lemma.cs" />
+    <Compile Include="Entities\LinkConfiguration.cs" />
     <Compile Include="Entities\Question.cs" />
     <Compile Include="Entities\Respondent.cs" />
     <Compile Include="Entities\Survey.cs" />

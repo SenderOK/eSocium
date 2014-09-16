@@ -26,6 +26,11 @@ namespace eSocium.Domain.Concrete
             get { return context.Answers; }
         }
 
+        public IQueryable<LinkConfiguration> LinkConfigurations
+        {
+            get { return context.LinkConfigurations; }
+        }
+
         public void SaveSurvey(Survey survey)
         {
             if (survey.SurveyID == 0)
@@ -111,9 +116,7 @@ namespace eSocium.Domain.Concrete
         {
             Answer dbEntry;
             if (answer.AnswerID == 0)
-            {
-                // Create workflow
-                // Fully formed surveys must come there (except for [key] = SurveyID)
+            {                
                 dbEntry = context.Answers.Add(answer);
             }
             else
@@ -128,7 +131,61 @@ namespace eSocium.Domain.Concrete
 
             SaveQuestion(answer.Question); // consistency!
             return dbEntry;
-
         }
+
+        public void SaveLinkConfiguration(LinkConfiguration LinkConfiguration)
+        {
+            if (LinkConfiguration.LinkConfigurationID == 0)
+            {
+                // Create workflow
+                // Fully formed LinkConfigurations must come there (except for [key] = LinkConfigurationID)
+                context.LinkConfigurations.Add(LinkConfiguration);
+            }
+            else
+            {
+                // Edit Workflow
+                // Only several fields interest us here
+                LinkConfiguration dbEntry = context.LinkConfigurations.Find(LinkConfiguration.LinkConfigurationID);
+                if (dbEntry != null)
+                {
+                    dbEntry.Name = LinkConfiguration.Name;
+                    dbEntry.LastModificationTime = LinkConfiguration.LastModificationTime;
+                    dbEntry.Description = LinkConfiguration.Description;
+                    dbEntry.Links = LinkConfiguration.Links;
+                }
+            }
+            context.SaveChanges();
+        }
+
+        public LinkConfiguration DeleteLinkConfiguration(int LinkConfigurationID)
+        {
+            LinkConfiguration dbEntry = context.LinkConfigurations.Find(LinkConfigurationID);
+            if (dbEntry != null)
+            {
+                context.LinkConfigurations.Remove(dbEntry);
+                context.SaveChanges();
+            }
+            return dbEntry;
+        }
+
+        public Lemma SaveLemma(Lemma lemma)
+        {
+            Lemma dbEntry;
+            if (lemma.LemmaID == 0)
+            {
+                dbEntry = context.Lemmas.Add(lemma);
+            }
+            else
+            {
+                dbEntry = context.Lemmas.Find(lemma.LemmaID);
+                if (dbEntry != null)
+                {
+                    dbEntry.OpenCorporaLemma = lemma.OpenCorporaLemma;
+                }
+            }
+            context.SaveChanges();
+            return dbEntry;
+        }
+
     }
 }

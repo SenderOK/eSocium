@@ -14,9 +14,12 @@ namespace eSocium.Domain.Concrete
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Respondent> Respondents { get; set; }
+        public DbSet<Lemma> Lemmas { get; set; }
+        public DbSet<LinkConfiguration> LinkConfigurations { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            // Fluent API, an alternative to DataAnnotations
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<Question>()
                         .HasRequired(q => q.Survey)

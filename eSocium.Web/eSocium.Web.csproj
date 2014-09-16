@@ -31,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -204,8 +205,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AnalyzeController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LinkConfigurationController.cs" />
     <Compile Include="Controllers\QuestionController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -224,6 +227,9 @@
     <Compile Include="Models\Concrete\WorksheetXls.cs" />
     <Compile Include="Models\Concrete\WorksheetXlsx.cs" />
     <Compile Include="Models\GetXlsViewModel.cs" />
+    <Compile Include="Models\LinkConfigurationViewModel.cs" />
+    <Compile Include="Models\NormalizerViewModel.cs" />
+    <Compile Include="Models\SelectLinkEditorViewModel.cs" />
     <Compile Include="Models\QuestionsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -344,6 +350,10 @@
     <Content Include="Views\Answer\Index.cshtml" />
     <Content Include="Views\Question\Create.cshtml" />
     <Content Include="Views\Question\Index.cshtml" />
+    <Content Include="Views\LinkConfiguration\Index.cshtml" />
+    <Content Include="Views\LinkConfiguration\EditorTemplates\SelectLinkEditorViewModel.cshtml" />
+    <Content Include="Views\LinkConfiguration\Edit.cshtml" />
+    <Content Include="Views\Analyze\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -355,6 +365,18 @@
     <ProjectReference Include="..\eSocium.Domain\eSocium.Domain.csproj">
       <Project>{95bf7ec3-aa20-4668-ae76-2f8a9b9f538d}</Project>
       <Name>eSocium.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NLPLibs\TextNormalizer\TextNormalizer.csproj">
+      <Project>{7881e650-2388-4272-af74-068d659cadea}</Project>
+      <Name>TextNormalizer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NLPLibs\TextTagger\TextTagger.csproj">
+      <Project>{bd6b76d6-7e5b-4fbf-bd87-b61280e2d7a4}</Project>
+      <Name>TextTagger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NLPLibs\TextTokenizer\TextTokenizer.csproj">
+      <Project>{e3b5a88c-c377-481d-8b8f-1d1cdf147560}</Project>
+      <Name>TextTokenizer</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

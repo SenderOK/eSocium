@@ -63,8 +63,8 @@
                 @Html.ActionLink("Delete", "Delete", new { QuestionID = item.QuestionID }, 
                     new { onclick = "return confirm('Are you sure you want to delete the question?')" })
                 <br>
-                @Html.ActionLink("Analyze", "Analyze", 
-                    new { QuestionID = item.QuestionID })
+                @Html.ActionLink("Analyze", "Index", 
+                    new {controller = "Analyze", QuestionID = item.QuestionID })
             </td>
         </tr>
     }

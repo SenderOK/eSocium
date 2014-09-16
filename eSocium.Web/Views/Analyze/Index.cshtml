@@ -1,0 +1,17 @@
+﻿@model eSocium.Web.Models.NormalizerViewModel
+
+@{
+    ViewBag.Title = "Step 1: Normalizing";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("SelectMethod", "Analyze"))
+{
+    @Html.LabelFor(m => m.SelectedConfigurationId)   
+    <br> 
+    @Html.DropDownListFor(m => m.SelectedConfigurationId, new SelectList(Model.Configurations, "LinkConfigurationID", "Name"))
+    <br>
+    <input type="submit" value="Select" />
+}
+@Html.HiddenFor(model => model.SelectedQuestionId)

@@ -23,6 +23,7 @@
                             <li>@Html.ActionLink("Home", "Index", "Home")</li>
                             @if (Request.IsAuthenticated) {
                                 <li>@Html.ActionLink("My Surveys", "Index", "Survey")</li>
+                                <li>@Html.ActionLink("My Link Configurations", "Index", "LinkConfiguration")</li>
                             }
                             <!--<li>fail@Html.ActionLink("About", "About", "Home")</li>-->
                             <!--<li>fail@Html.ActionLink("Contact", "Contact", "Home")</li>-->
