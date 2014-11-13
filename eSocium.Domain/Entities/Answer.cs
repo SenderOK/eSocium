@@ -31,5 +31,7 @@ namespace eSocium.Domain.Entities
         public int? RespondentID { get; set; }
         [ForeignKey("RespondentID")]
         public virtual Respondent Respondent { get; set; }
+
+        public virtual ICollection<Lemma> Lemmas { get; set; }
     }
 }

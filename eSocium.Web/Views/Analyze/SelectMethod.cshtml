@@ -1,0 +1,36 @@
+﻿@model eSocium.Web.Models.ResultViewModel
+
+@{
+    ViewBag.Title = "Normalizing Results";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<h3>Наиболее частые слова:</h3>
+@foreach(var item in Model.MostCommonWords)
+{
+    @Html.DisplayFor(modelItem => item.Key)     
+    <text> --- </text>
+    @Html.DisplayFor(modelItem => item.Value)
+    <br>
+}
+
+<!--<h3>Cлова, которые не удалось идентифицировать:</h3>-->
+@*
+@foreach (var item in Model.UnknownWords)
+{
+    @Html.DisplayFor(modelItem => item)
+    <br>
+}
+*@
+
+@foreach (var item in Model.Clustering.Select((value, i) => new { i, value }))
+{
+    <h3> Cluster @item.i:</h3>
+    <br>
+    foreach(var ans in Model.Clustering[item.i])
+    {
+        @Html.DisplayFor(modelItem => ans)
+        <br>
+    }
+}

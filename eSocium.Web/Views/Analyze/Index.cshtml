@@ -10,8 +10,8 @@
 {
     @Html.LabelFor(m => m.SelectedConfigurationId)   
     <br> 
-    @Html.DropDownListFor(m => m.SelectedConfigurationId, new SelectList(Model.Configurations, "LinkConfigurationID", "Name"))
+    @Html.DropDownListFor(m => m.SelectedConfigurationId, new SelectList(Model.Configurations, "LinkConfigurationID", "Name"))    
     <br>
+    @Html.HiddenFor(model => model.SelectedQuestionId)
     <input type="submit" value="Select" />
 }
-@Html.HiddenFor(model => model.SelectedQuestionId)

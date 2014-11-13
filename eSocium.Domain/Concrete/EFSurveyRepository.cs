@@ -31,6 +31,11 @@ namespace eSocium.Domain.Concrete
             get { return context.LinkConfigurations; }
         }
 
+        public IQueryable<Lemma> Lemmas
+        {
+            get { return context.Lemmas; }
+        }
+
         public void SaveSurvey(Survey survey)
         {
             if (survey.SurveyID == 0)
@@ -111,26 +116,61 @@ namespace eSocium.Domain.Concrete
             }
             return dbEntry;
         }
-
-        public Answer SaveAnswer(Answer answer)
+        //!
+        public void SaveAnswers(List<Answer> answers)
         {
-            Answer dbEntry;
-            if (answer.AnswerID == 0)
-            {                
-                dbEntry = context.Answers.Add(answer);
-            }
-            else
+            if (answers == null || answers.Count == 0)
             {
-                dbEntry = context.Answers.Find(answer.AnswerID);
-                if (dbEntry != null)
+                return;
+            }
+
+            /*
+            foreach(Answer ans in answers)
+            {
+                context.Answers.Add(ans);                     
+            }                       
+            context.SaveChanges();
+            */
+
+            // using SqlBulkCopy technology
+            System.Data.DataTable table = new System.Data.DataTable();
+            table.Columns.Add("Text", typeof(string));
+            table.Columns.Add("UserRespondentID", typeof(int));
+            table.Columns.Add("QuestionID", typeof(int));
+            table.Columns.Add("RespondentID", typeof(int));
+
+            for (int i = 0; i < answers.Count; ++i)
+                table.Rows.Add(new object[] {
+                            answers[i].Text,
+                            answers[i].UserRespondentID,
+                            answers[i].QuestionID,
+                            answers[i].RespondentID
+                });
+
+            string connString = context.Database.Connection.ConnectionString;            
+
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(connString))
+            {
+                conn.Open();
+                using (System.Data.SqlClient.SqlTransaction tran = conn.BeginTransaction())
                 {
-                    dbEntry.Text = answer.Text;
+                    using (System.Data.SqlClient.SqlBulkCopy bulkCopy =
+                            new System.Data.SqlClient.SqlBulkCopy(conn, System.Data.SqlClient.SqlBulkCopyOptions.Default, tran))
+                    {
+                        bulkCopy.DestinationTableName = "Answer";
+                        bulkCopy.ColumnMappings.Add("Text", "Text");
+                        bulkCopy.ColumnMappings.Add("UserRespondentID", "UserRespondentID");
+                        bulkCopy.ColumnMappings.Add("QuestionID", "QuestionID");
+                        bulkCopy.ColumnMappings.Add("RespondentID", "RespondentID");
+                        bulkCopy.WriteToServer(table);
+                    }
+                    tran.Commit();
                 }
             }
-            context.SaveChanges();
+            context.Dispose();
+            context = new SurveysContext();
 
-            SaveQuestion(answer.Question); // consistency!
-            return dbEntry;
+            SaveQuestion(answers.First().Question); // consistency! 
         }
 
         public void SaveLinkConfiguration(LinkConfiguration LinkConfiguration)
@@ -168,23 +208,65 @@ namespace eSocium.Domain.Concrete
             return dbEntry;
         }
 
-        public Lemma SaveLemma(Lemma lemma)
+        public void SaveLemmas(List<Lemma> lemmas)
         {
-            Lemma dbEntry;
-            if (lemma.LemmaID == 0)
+            if (lemmas == null || lemmas.Count == 0)
             {
-                dbEntry = context.Lemmas.Add(lemma);
+                return;
             }
-            else
+            /* Failed to use standard EF bulk insertion
+             *
+            context.Dispose();
+            context = new SurveysContext();
+            context.Configuration.AutoDetectChangesEnabled = false;
+            context.Configuration.ValidateOnSaveEnabled = false;            
+            for (int i = 0; i < lemmas.Count; ++i)
+            {                                               
+                context.Lemmas.Add(lemmas[i]);
+            }
+            context.ChangeTracker.DetectChanges();
+            context.SaveChanges();
+            */
+
+            // using SqlBulkCopy technology
+
+            System.Data.DataTable table = new System.Data.DataTable();
+            table.Columns.Add("OpenCorporaLemma", typeof(int));
+            table.Columns.Add("Word", typeof(string));
+            table.Columns.Add("AnswerID", typeof(int));
+            table.Columns.Add("LinkConfigurationID", typeof(int));            
+
+            for (int i = 0; i < lemmas.Count; ++i)
+                table.Rows.Add(new object[] {
+                            lemmas[i].OpenCorporaLemma,
+                            lemmas[i].Word,
+                            lemmas[i].AnswerID,
+                            lemmas[i].LinkConfigurationID
+                });
+
+            string connString = context.Database.Connection.ConnectionString;            
+
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(connString))
             {
-                dbEntry = context.Lemmas.Find(lemma.LemmaID);
-                if (dbEntry != null)
+                conn.Open();
+                using (System.Data.SqlClient.SqlTransaction tran = conn.BeginTransaction())
                 {
-                    dbEntry.OpenCorporaLemma = lemma.OpenCorporaLemma;
+                    using (System.Data.SqlClient.SqlBulkCopy bulkCopy =
+                            new System.Data.SqlClient.SqlBulkCopy(conn, System.Data.SqlClient.SqlBulkCopyOptions.Default, tran))
+                    {
+                        bulkCopy.DestinationTableName = "Lemma";
+                        bulkCopy.ColumnMappings.Add("OpenCorporaLemma", "OpenCorporaLemma");
+                        bulkCopy.ColumnMappings.Add("Word", "Word");
+                        bulkCopy.ColumnMappings.Add("AnswerID", "AnswerID");
+                        bulkCopy.ColumnMappings.Add("LinkConfigurationID", "LinkConfigurationID");                        
+                        bulkCopy.WriteToServer(table);
+                    }
+                    tran.Commit();
                 }
             }
-            context.SaveChanges();
-            return dbEntry;
+
+            context.Dispose();
+            context = new SurveysContext();
         }
 
     }

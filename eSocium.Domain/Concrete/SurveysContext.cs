@@ -29,6 +29,10 @@ namespace eSocium.Domain.Concrete
                         .HasRequired(a => a.Question)
                         .WithMany(q => q.Answers)
                         .WillCascadeOnDelete();
+            modelBuilder.Entity<Lemma>()
+                        .HasRequired(l => l.Answer)  
+                        .WithMany(l => l.Lemmas)
+                        .WillCascadeOnDelete();
         }
     }
 }

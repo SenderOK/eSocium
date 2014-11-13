@@ -16,6 +16,7 @@ namespace TestApp
         static void Main(string[] args)
         {
             Console.WriteLine("Привет мир:");
+            /*
             List<Form> formsList = Normalizer.normalize("Привет");
             foreach (Form f in formsList)
             {
@@ -47,9 +48,9 @@ namespace TestApp
                 }
                 Console.WriteLine();
             }
-            
+            */
             Console.WriteLine("Привет, мир! Привет, мир. Привет, мир? Привет, мир...");
-            string[] s = SentenceTokenizer.tokenize("Привет, мир! Привет, мир. Привет, мир? Привет, мир...");
+            string[] s = SentenceTokenizer.tokenize("Привет, как дела? Хорошо?.");
             foreach (string w in s)
                 Console.Write(w + " | ");
             Console.Write("\n");
@@ -65,7 +66,7 @@ namespace TestApp
             foreach (string w in s)
                 Console.Write(w + " | ");
             Console.Write("\n");
-
+            /*
             List<int> lList = new List<int>() {-3, -5, -4, -11, -21, -22, -23, -24, -12, -15, -16, -17, -18, -19, -20};
             LinkConfiguration lConf = new LinkConfiguration();
             Console.WriteLine(lConf.setConf(lList));
@@ -112,7 +113,7 @@ namespace TestApp
             {
                 Console.WriteLine(form.word + " : " + form.tags.tagsToString());
             }
-            
+            */
             Console.ReadKey();
         }
     }

@@ -16,6 +16,9 @@ namespace eSocium.Domain.Entities
         [Required]
         public int OpenCorporaLemma { get; set; }
 
+        [Required]
+        public string Word { get; set; }
+
         public int? AnswerID { get; set; }
         [ForeignKey("AnswerID")]
         public virtual Answer Answer { get; set; }

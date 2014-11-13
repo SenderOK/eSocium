@@ -12,6 +12,7 @@ namespace eSocium.Domain.Abstract
         IQueryable<Question> Questions { get; }
         IQueryable<Answer> Answers { get; }
         IQueryable<LinkConfiguration> LinkConfigurations { get; }
+        IQueryable<Lemma> Lemmas { get; }
 
         void SaveSurvey(Survey survey);
         Survey DeleteSurvey(int surveyID);
@@ -19,11 +20,11 @@ namespace eSocium.Domain.Abstract
         Question SaveQuestion(Question question);
         Question DeleteQuestion(int questioID);
 
-        Answer SaveAnswer(Answer answer);
+        void SaveAnswers(List<Answer> answers);
 
         void SaveLinkConfiguration(LinkConfiguration LinkConfiguration);
         LinkConfiguration DeleteLinkConfiguration(int LinkConfigurationID);
 
-        Lemma SaveLemma(Lemma lemma);
+        void SaveLemmas(List<Lemma> lemmas);
     }
 }

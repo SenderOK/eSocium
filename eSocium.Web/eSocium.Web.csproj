@@ -222,6 +222,7 @@
     <Compile Include="Models\Abstract\IWorksheetExtension.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AnswersViewModel.cs" />
+    <Compile Include="Models\Concrete\KmeansClustering.cs" />
     <Compile Include="Models\Concrete\Methods.cs" />
     <Compile Include="Models\Concrete\RespondentAnswerTable.cs" />
     <Compile Include="Models\Concrete\WorksheetXls.cs" />
@@ -229,6 +230,7 @@
     <Compile Include="Models\GetXlsViewModel.cs" />
     <Compile Include="Models\LinkConfigurationViewModel.cs" />
     <Compile Include="Models\NormalizerViewModel.cs" />
+    <Compile Include="Models\ResultViewModel.cs" />
     <Compile Include="Models\SelectLinkEditorViewModel.cs" />
     <Compile Include="Models\QuestionsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -354,6 +356,7 @@
     <Content Include="Views\LinkConfiguration\EditorTemplates\SelectLinkEditorViewModel.cshtml" />
     <Content Include="Views\LinkConfiguration\Edit.cshtml" />
     <Content Include="Views\Analyze\Index.cshtml" />
+    <Content Include="Views\Analyze\SelectMethod.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

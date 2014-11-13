@@ -125,13 +125,15 @@ namespace eSocium.Web.Controllers
 
                 for (int i = 0; i < RAT.answers.Length; ++i)
                 {
-                    Question question = new Question();
-                    question.CreationTime = DateTime.Now;
-                    question.LastModificationTime = DateTime.Now;
-                    question.Label = "";
-                    question.AdditionalInfo = "";
-                    question.Survey = survey;
-                    question.SurveyID = data.SurveyID;
+                    Question question = new Question()
+                    {
+                        CreationTime = DateTime.Now,
+                        LastModificationTime = DateTime.Now,
+                        Label = "",
+                        AdditionalInfo = "",
+                        Survey = survey,
+                        SurveyID = data.SurveyID
+                    };
                     if (!data.hasHeader)
                     {
                         question.Wording = "AUTO WORDING";
@@ -143,16 +145,21 @@ namespace eSocium.Web.Controllers
                     question = repository.SaveQuestion(question);
                     // the question is created, now let's add info about answers
                     // it would be nice to create respondents here
+
+                    List<Answer> answers = new List<Answer>();
                     foreach (var resp_answ in RAT.answers[i])
                     {
-                        Answer answer = new Answer();
-                        answer.Text = resp_answ.Value;
-                        answer.UserRespondentID = resp_answ.Key;
-                        answer.RespondentID = null;
-                        answer.Question = question;
-                        answer.QuestionID = question.QuestionID;
-                        repository.SaveAnswer(answer);
+                        Answer answer = new Answer()
+                        {
+                            Text = resp_answ.Value,
+                            UserRespondentID = resp_answ.Key,
+                            RespondentID = null,
+                            Question = question,
+                            QuestionID = question.QuestionID
+                        };
+                        answers.Add(answer);
                     }
+                    repository.SaveAnswers(answers);
                     if (RAT.answers.Length == 1 && !data.hasHeader)
                     {
                         return RedirectToAction("Edit", new { question.QuestionID });
@@ -168,8 +175,7 @@ namespace eSocium.Web.Controllers
 
         public ActionResult Analyze(int questionID)
         {
-            return View();
-            // TBD
+            return View();            
         }
 
     }
