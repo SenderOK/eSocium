@@ -19,6 +19,9 @@ namespace eSocium.Domain.Entities
         [Required]
         public string Word { get; set; }
 
+        [Required]
+        public string NormalizedWord { get; set; }
+
         public int? AnswerID { get; set; }
         [ForeignKey("AnswerID")]
         public virtual Answer Answer { get; set; }

@@ -57,6 +57,7 @@ namespace eSocium.Web.Controllers
                         foreach (Form form in forms)
                         {
                             int lemmaID = form.parentLemma.id;
+                            string NormalizedWord = "-1";
                             if (form.isUnknown() || form.isNumber())
                             {
                                 result.UnknownWords.Add(form.word);
@@ -65,6 +66,7 @@ namespace eSocium.Web.Controllers
                             {
                                 TextNormalizer.Lemma lemma = Normalizer.aggregate(Normalizer.getLemmaById(lemmaID), configuration);
                                 lemmaID = lemma.id;
+                                NormalizedWord = lemma.firstForm;
 
                                 if (LemmaCount.ContainsKey(lemma.firstForm))
                                 {
@@ -83,6 +85,7 @@ namespace eSocium.Web.Controllers
                                 LinkConfigurationID = LinkConfigurationID,
                                 OpenCorporaLemma = lemmaID,
                                 Word = form.word,
+                                NormalizedWord = NormalizedWord,
                                 Answer = answer,
                                 LinkConfiguration = cfg
                             };
@@ -100,15 +103,15 @@ namespace eSocium.Web.Controllers
                 {
                     if (l.OpenCorporaLemma != -1)
                     {
-                        TextNormalizer.Lemma lemma = Normalizer.getLemmaById(l.OpenCorporaLemma);
+                        //TextNormalizer.Lemma lemma = Normalizer.getLemmaById(l.OpenCorporaLemma);
 
-                        if (LemmaCount.ContainsKey(lemma.firstForm))
+                        if (LemmaCount.ContainsKey(l.NormalizedWord))
                         {
-                            LemmaCount[lemma.firstForm] += 1;
+                            LemmaCount[l.NormalizedWord] += 1;
                         }
                         else
                         {
-                            LemmaCount.Add(lemma.firstForm, 1);
+                            LemmaCount.Add(l.NormalizedWord, 1);
                         }
                         // counted the word
                     }
@@ -146,6 +149,7 @@ namespace eSocium.Web.Controllers
             Dictionary<int, int> LemmaIDNum = new Dictionary<int, int>();
             Dictionary<int, int> AnswerIDNum = new Dictionary<int, int>();
             Answer[] AnswerNumID = new Answer[answers.Count];
+            Domain.Entities.Lemma[] LemmaNumID = new Domain.Entities.Lemma[s.Count];
             
             int ansCnt = 0, lemmaCnt = 0;
 
@@ -155,7 +159,7 @@ namespace eSocium.Web.Controllers
                 {
                     int currAns, currLemma;                    
                     if (!AnswerIDNum.ContainsKey(l.Answer.AnswerID))
-                    {                        
+                    {
                         AnswerNumID[ansCnt] = l.Answer;
                         currAns = ansCnt;                        
                         AnswerIDNum.Add(l.Answer.AnswerID, ansCnt++);
@@ -167,6 +171,7 @@ namespace eSocium.Web.Controllers
 
                     if (!LemmaIDNum.ContainsKey(l.OpenCorporaLemma))
                     {
+                        LemmaNumID[lemmaCnt] = l;
                         currLemma = lemmaCnt;
                         LemmaIDNum.Add(l.OpenCorporaLemma, lemmaCnt++);
                     } 
@@ -180,22 +185,34 @@ namespace eSocium.Web.Controllers
             } 
            
             // the data is ready, running KMeans
-            int nClusters = 10;
-            var res = KMeans.Cluster(data, nClusters, 50, 
-                calculateDistanceFunction:(p, c) => p.Select((x, i) => - c[i] * x).Sum());
+            int nClusters = 8;
+            var res = KMeans.Cluster(data, nClusters, 50, null);                        
 
             // finally preparing the result            
-            List<string>[] ans = new List<string>[nClusters];
+            List<KeyValuePair<string, double>>[] TypicalWords = 
+                new List<KeyValuePair<string, double>>[nClusters];
+            List<string>[] Clustering = new List<string>[nClusters];
             for (int i = 0; i < nClusters; ++i )
             {
-                ans[i] = new List<string>();
+                Clustering[i] = new List<string>();
+                TypicalWords[i] = new List<KeyValuePair<string, double>>();
             }
-            for (int i = 0; i < answers.Count; ++i)
+            for (int k = 0; k < nClusters; ++k)
             {
-                ans[res.Clustering[i]].Add(AnswerNumID[i].Text);
+                for (int i = 0; i < res.ObjIds[k].Length; ++i)
+                {
+                    Clustering[k].Add(AnswerNumID[res.ObjIds[k][i]].Text);
+                }
+
+                // time to find most frequent words in cluster                
+                TypicalWords[k] = (from x in Enumerable.Range(0, res.Means[k].Length)
+                   .Select(i => new { val = res.Means[k][i], text = LemmaNumID[i].NormalizedWord }) 
+                   where x.val > 0 orderby x.val descending select new KeyValuePair<string, double>(x.text, x.val))
+                   .Take(5).ToList();                 
             }
-            result.Clustering = ans.ToList();
-                        
+            result.Clustering = Clustering.ToList();
+            result.TypicalWords = TypicalWords.ToList();
+            
             return result;            
         }
 

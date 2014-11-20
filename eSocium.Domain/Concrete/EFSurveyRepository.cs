@@ -233,6 +233,7 @@ namespace eSocium.Domain.Concrete
             System.Data.DataTable table = new System.Data.DataTable();
             table.Columns.Add("OpenCorporaLemma", typeof(int));
             table.Columns.Add("Word", typeof(string));
+            table.Columns.Add("NormalizedWord", typeof(string));
             table.Columns.Add("AnswerID", typeof(int));
             table.Columns.Add("LinkConfigurationID", typeof(int));            
 
@@ -240,6 +241,7 @@ namespace eSocium.Domain.Concrete
                 table.Rows.Add(new object[] {
                             lemmas[i].OpenCorporaLemma,
                             lemmas[i].Word,
+                            lemmas[i].NormalizedWord,
                             lemmas[i].AnswerID,
                             lemmas[i].LinkConfigurationID
                 });
@@ -257,6 +259,7 @@ namespace eSocium.Domain.Concrete
                         bulkCopy.DestinationTableName = "Lemma";
                         bulkCopy.ColumnMappings.Add("OpenCorporaLemma", "OpenCorporaLemma");
                         bulkCopy.ColumnMappings.Add("Word", "Word");
+                        bulkCopy.ColumnMappings.Add("NormalizedWord", "NormalizedWord");
                         bulkCopy.ColumnMappings.Add("AnswerID", "AnswerID");
                         bulkCopy.ColumnMappings.Add("LinkConfigurationID", "LinkConfigurationID");                        
                         bulkCopy.WriteToServer(table);

@@ -95,9 +95,9 @@ namespace eSocium.Web.Models.Concrete
         {
             double[][] data = ConvertEntities(items);
 
-            // Use the built in Euclidean distance calculation if no custom one is specified
+            // Use the built in distance calculation if no custom one is specified
             if (calculateDistanceFunction == null)
-                calculateDistanceFunction = CalculateDistance;
+                calculateDistanceFunction = CalculateCosineDistance;
             
             bool hasChanges = true;
             int iteration = 0;
@@ -135,22 +135,56 @@ namespace eSocium.Web.Models.Concrete
 
                 hasChanges = AssignClustering(data, clustering, centroidIdx, clusterCount, calculateDistanceFunction);
                 ++iteration;
-            }
+            }            
 
             // Create the final clusters
             T[][] clusters = new T[clusterCount][];
+            int [][] objIds = new int[clusterCount][];            
             for (int k = 0; k < clusters.Length; k++)
+            {
                 clusters[k] = new T[clusterItemCount[k]];
+                objIds[k] = new int[clusterItemCount[k]];
+            }
+
+            double[] dists = new double[clustering.Length];            
 
             int[] clustersCurIdx = new int[clusterCount];
             for (int i = 0; i < clustering.Length; i++)
-            {
-                clusters[clustering[i]][clustersCurIdx[clustering[i]]] = items[i];
+            {                
+                objIds[clustering[i]][clustersCurIdx[clustering[i]]] = i;
+                dists[i] = calculateDistanceFunction(data[i], means[clustering[i]]);
                 ++clustersCurIdx[clustering[i]];
             }
             
+            // sorting the objects in clusters by distance            
+            for (int k = 0; k < clusterCount; ++k)
+            {
+                for (int i = 0; i < clusterItemCount[k]; ++i)
+                {
+                    for (int j = 0; j < clusterItemCount[k] - i - 1; ++j)
+                    {
+                        int ind1 = objIds[k][j];
+                        int ind2 = objIds[k][j + 1];
+                        double d1 = dists[ind1];
+                        double d2 = dists[ind2];
+                        if(d1 > d2)
+                        {
+                            int tmp = objIds[k][j];
+                            objIds[k][j] = objIds[k][j + 1];
+                            objIds[k][j + 1] = tmp;                            
+                        }
+                    }
+                }
+
+                // forming final clusters
+                for (int i = 0; i < clusterItemCount[k]; ++i)
+                {
+                    clusters[k][i] = items[objIds[k][i]];
+                }
+            }            
+
             // Return the results
-            return new KMeansResults<T>(clusters, means, centroidIdx, totalDistance, clustering);
+            return new KMeansResults<T>(clusters, means, centroidIdx, totalDistance, objIds);
         }
 
         private static int[] InitializeClustering(int numData, int clusterCount, int seed)
@@ -245,8 +279,7 @@ namespace eSocium.Web.Models.Concrete
                     {
                         minDistance = distance;
                         minClusterIndex = k;
-                    }
-                    // todo: track outliers here as well and maintain an average and std calculation for the distances!
+                    }                    
                 } 
 
                 // Re-arrange the clustering for datapoint if needed
@@ -271,6 +304,22 @@ namespace eSocium.Web.Models.Concrete
                 sum += Math.Pow(centroid[i] - point[i], 2);
 
             return Math.Sqrt(sum);
+            //return Math.Sqrt(point.Select((t, i) => Math.Pow(centroid[i] - t, 2)).Sum()); // LINQ is slower than doing the for-loop!
+        }
+
+        private static double CalculateCosineDistance(double[] point, double[] centroid)
+        {
+            // For each attribute calculate the squared difference between the centroid and the point
+            double pointNorm = 0, centroidNorm = 0, sum = 0;
+            for (int i = 0; i < point.Length; i++)
+            {
+                pointNorm += Math.Pow(point[i], 2);
+                centroidNorm += Math.Pow(centroid[i], 2);                
+                sum += point[i] * centroid[i];
+            }
+            pointNorm = Math.Sqrt(pointNorm);
+            centroidNorm = Math.Sqrt(centroidNorm);                        
+            return (pointNorm < 1e-6 || centroidNorm < 1e-6) ? 1 : 1 - sum / (pointNorm * centroidNorm);
             //return Math.Sqrt(point.Select((t, i) => Math.Pow(centroid[i] - t, 2)).Sum()); // LINQ is slower than doing the for-loop!
         }
     }
@@ -307,15 +356,16 @@ namespace eSocium.Web.Models.Concrete
         /// <summary>
         /// The list containing number of cluster for each item        
         /// </summary>
-        public int[] Clustering { get; private set; }
+//        public int[] Clustering { get; private set; }
+        public int[][] ObjIds { get; private set; }
 
-        public KMeansResults(T[][] clusters, double[][] means, int[] centroids, double totalDistance, int[] clustering)
+        public KMeansResults(T[][] clusters, double[][] means, int[] centroids, double totalDistance, int[][] objIds)
         {
             Clusters = clusters;
             Means = means;
             Centroids = centroids;
-            TotalDistance = totalDistance;
-            Clustering = clustering;
+            TotalDistance = totalDistance;            
+            ObjIds = objIds;
         }
     }
 }

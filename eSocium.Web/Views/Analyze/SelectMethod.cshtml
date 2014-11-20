@@ -24,13 +24,30 @@
 }
 *@
 
+<br>
+<h3>@Html.LabelFor(m => m.SelectedActionId)</h3>
+<br>
+@Html.DropDownListFor(m => m.SelectedActionId, new SelectList(Model.Actions))
+<br>
+@*@Html.HiddenFor(model => model.SelectedQuestionId)*@
+
 @foreach (var item in Model.Clustering.Select((value, i) => new { i, value }))
-{
+{    
     <h3> Cluster @item.i:</h3>
     <br>
-    foreach(var ans in Model.Clustering[item.i])
+    foreach(var word in Model.TypicalWords[item.i])
     {
-        @Html.DisplayFor(modelItem => ans)
+        @Html.DisplayFor(modelItem =>word.Key)
+        <text> --- </text>
+        @Html.DisplayFor(modelItem =>word.Value)    
+        <text>; </text>
+        <br>
+    }
+    <br>
+    foreach(var ans in Model.Clustering[item.i].Select((text, j) => new {j, text}))
+    {
+        @Html.CheckBoxFor(model => model.Selected[item.i][ans.j])
+        @Html.DisplayFor(modelItem => ans.text)
         <br>
     }
 }

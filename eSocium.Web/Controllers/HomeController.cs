@@ -26,9 +26,8 @@ namespace eSocium.Web.Controllers
         {
             //ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
             
-            // didn't know where to put it
-            //#
-            TextNormalizer.Normalizer.Initalize();
+            // didn't know where to put it            
+            //TextNormalizer.Normalizer.Initalize();
             /*
             int QuestionID = 1;
             int LinkConfigurationID = 1;
